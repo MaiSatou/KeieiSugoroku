@@ -1,10 +1,22 @@
 package trident.Zoo;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
 import android.view.WindowManager;
@@ -82,6 +94,7 @@ public class GameActivity extends Activity implements Runnable {
 	 */
 	// private Context context;
 
+	private String jsonData;
 	/**
 	 * 作成時の処理。
 	 *
@@ -92,6 +105,7 @@ public class GameActivity extends Activity implements Runnable {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		ReadJson();
 		// 変数初期化
 		loopFlag = true;
 
@@ -276,5 +290,34 @@ public class GameActivity extends Activity implements Runnable {
 	{
 		// 本来のフィニッシュを呼ぶ
 		super.finish();
+	}
+
+	public void ReadJson(){
+		URL url = null;
+        BufferedInputStream in = null;
+        HttpURLConnection con = null;
+        try {
+            url = new URL("http://www.android.com/");
+            con = (HttpURLConnection)
+                    url.openConnection();
+            in = new BufferedInputStream
+                    (con.getInputStream());
+            byte[] data = new byte[1024];
+            in.read(data);
+            jsonData = new String(data);
+            System.out.println(jsonData);
+
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                in.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            con.disconnect();
+        }
 	}
 }
