@@ -69,8 +69,7 @@ public class GameMain {
 	private Bitmap bg;
 
 	private DBAdapter dbAdapter;
-	private SharedPreferences sharedPref;
-	private String userName;
+	private ZooData zooData;
 	/** ============================================ **/
 
 	/**
@@ -78,22 +77,8 @@ public class GameMain {
 	 */
 	public GameMain(Context context) {
 		this.context = context;
-		sharedPref = PreferenceManager.getDefaultSharedPreferences(this.context);
 		// 端末に保存されているユーザー名を取得する。
-		userName = sharedPref.getString("UserName", "");
-
-		// ユーザー名が決められていない場合
-		if(userName.equals("")){
-			userName = "No-Name";
-
-			// ユーザー名を登録する
-			Editor editor = sharedPref.edit();
-			editor.putString("UserName", "aabbccdd");
-			editor.commit();
-		}
-
-		// Logにユーザー名をデバッグ出力
-		System.out.println(userName);
+		zooData = new ZooData(this.context);
 
 		dbAdapter = new DBAdapter(this.context);
 		dbAdapter.saveData("abcdefg",0,0,0);
@@ -197,10 +182,13 @@ public class GameMain {
 		sv.DrawImage(bg, 0, 0);
 
 		// テキストを表示する。
-		sv.DrawText("FPS:" + fps, 10, 20, Color.BLACK);
-		sv.DrawText("x:" + touch_push.x + " y:" + touch_push.y, 100, 20, Color.WHITE);
-		sv.DrawText("x2:" + touch_release.x + " y:2" + touch_release.y, 300, 20, Color.WHITE);
+		sv.DrawText("Name:" + zooData.getName(), 10, 20, Color.BLACK);
+		sv.DrawText("Rank:", 200, 20, Color.WHITE);
+		for(int i = 0;i < zooData.getRank();i++){
+			sv.DrawText("★", 250 + (20 * i), 20, Color.WHITE);
 
+		}
+		sv.DrawText("Money:" + "￥" + zooData.getMoney(), 500, 20, Color.WHITE);
 	}
 
 	/**

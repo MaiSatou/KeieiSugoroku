@@ -11,19 +11,25 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import android.R.id;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.text.SpannableStringBuilder;
 import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
-public class GameActivity extends Activity implements Runnable {
+public class GameActivity extends Activity implements Runnable, OnClickListener {
 	/**
 	 * 仮想のスクリーンサイズ インターフェイスの配置などはこの数字を想定して配置する
 	 */
@@ -93,7 +99,9 @@ public class GameActivity extends Activity implements Runnable {
 	 * コンテキスト。
 	 */
 	// private Context context;
-
+	private ZooData zooData;
+	private EditText editText;
+	private  Button button1;
 	/**
 	 * 作成時の処理。
 	 *
@@ -103,7 +111,11 @@ public class GameActivity extends Activity implements Runnable {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		//ReadJson();
+		 setContentView(R.layout.main);
+
+		editText = (EditText)findViewById(R.id.edittext);
+		button1 = (Button)findViewById(R.id.saveButton);
+		zooData = new ZooData(this);
 		// 変数初期化
 		loopFlag = true;
 
@@ -214,7 +226,7 @@ public class GameActivity extends Activity implements Runnable {
 		int fpsCount = 0;
 		float elapsedTime = 0;
 
-
+		EditName();
 		// ゲームを初期化する。
 		gameMain.initialize();
 
@@ -239,12 +251,15 @@ public class GameActivity extends Activity implements Runnable {
 
 						// 入力を更新する。
 						VirtualController.update();
-
-						// アプリケーションの更新および描画する。
-						gameMain.update(elapsedTime);
-						if (surfaceView.Begin()) {
-							gameMain.draw(surfaceView);
-							surfaceView.End();
+						if(zooData.getName().equals("")){
+							EditName();
+						}else{
+							// アプリケーションの更新および描画する
+							gameMain.update(elapsedTime);
+							if (surfaceView.Begin()) {
+								gameMain.draw(surfaceView);
+								surfaceView.End();
+							}
 						}
 					}
 				}
@@ -289,5 +304,13 @@ public class GameActivity extends Activity implements Runnable {
 		// 本来のフィニッシュを呼ぶ
 		super.finish();
 	}
+
+	public void EditName(){
+	    button1.setOnClickListener(this);
+	}
+	@Override
+	public void onClick(View v) {
+            zooData.setName(editText.getText().toString());
+     }
 
 }
