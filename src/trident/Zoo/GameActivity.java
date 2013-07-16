@@ -94,7 +94,6 @@ public class GameActivity extends Activity implements Runnable {
 	 */
 	// private Context context;
 
-	private String jsonData;
 	/**
 	 * 作成時の処理。
 	 *
@@ -104,8 +103,7 @@ public class GameActivity extends Activity implements Runnable {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-		ReadJson();
+		//ReadJson();
 		// 変数初期化
 		loopFlag = true;
 
@@ -292,32 +290,4 @@ public class GameActivity extends Activity implements Runnable {
 		super.finish();
 	}
 
-	public void ReadJson(){
-		URL url = null;
-        BufferedInputStream in = null;
-        HttpURLConnection con = null;
-        try {
-            url = new URL("http://www.android.com/");
-            con = (HttpURLConnection)
-                    url.openConnection();
-            in = new BufferedInputStream
-                    (con.getInputStream());
-            byte[] data = new byte[1024];
-            in.read(data);
-            jsonData = new String(data);
-            System.out.println(jsonData);
-
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                in.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            con.disconnect();
-        }
-	}
 }
