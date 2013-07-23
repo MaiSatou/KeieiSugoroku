@@ -163,7 +163,7 @@ public class GameSurfaceView extends SurfaceView implements
 	 * @param color
 	 *            色
 	 */
-	protected void DrawText(String s, int x, int y, int color) {
+	public void DrawText(String s, int x, int y, int color) {
 		paint.setColor(color);
 		paint.setAntiAlias(true);
 		paint.setTextSize(20);
@@ -225,6 +225,34 @@ public class GameSurfaceView extends SurfaceView implements
 
 	}
 
+	/**
+	 * 画像を描画する。
+	 *
+	 * @param bmp
+	 *            ビットマップ
+	 * @param x
+	 *            描画先のX座標
+	 * @param y
+	 *            描画先のY座標
+	 * @param sx
+	 *            描画元のX座標
+	 * @param sy
+	 *            描画元のY座標
+	 * @param sw
+	 *            描画元の幅
+	 * @param sh
+	 *            描画元の高さ
+	 * @param reverse
+	 *            反転するか？
+	 */
+	public void DrawRect(int x, int y,int w,
+			int h,int color) {
+
+		paint.setColor(color);
+		Rect rect = new Rect(x, y, w,h);
+			canvas.save();
+			canvas.drawRect(rect,paint);
+	}
 	/**
 	 * 数字をテクスチャで描画する。
 	 *

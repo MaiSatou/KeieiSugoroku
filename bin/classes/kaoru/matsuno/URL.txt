@@ -1,0 +1,10 @@
+クォータービュー ひし形への変換など
+http://javadroid.blog.fc2.com/blog-entry-26.html
+http://kyokomi-android.doorblog.jp/archives/7151722.html
+http://2dgames.jp/2012/05/22/%E3%82%AF%E3%82%A9%E3%83%BC%E3%82%BF%E3%83%93%E3%83%A5%E3%83%BC%E3%81%AE%E4%BD%9C%E3%82%8A%E6%96%B9/
+
+マップクリックについて
+http://gunsyu3.hatenadiary.jp/entry/20100501/1272676155
+
+ひし形当たり判定
+http://hatyati.blog.fc2.com/blog-entry-43.html

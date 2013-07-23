@@ -1,35 +1,17 @@
 package trident.Zoo;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-
-import android.R.id;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.text.SpannableStringBuilder;
-import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
-import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
-public class GameActivity extends Activity implements Runnable, OnClickListener {
+public class GameActivity extends Activity implements Runnable {
 	/**
 	 * 仮想のスクリーンサイズ インターフェイスの配置などはこの数字を想定して配置する
 	 */
@@ -94,14 +76,16 @@ public class GameActivity extends Activity implements Runnable, OnClickListener 
 	 * ゲーム本体。
 	 */
 	private GameMain gameMain;
+	/**
+	 * ゲーム本体。
+	 */
+	private SugorokuMain sugorokuMain;
 
 	/**
 	 * コンテキスト。
 	 */
 	// private Context context;
-	private ZooData zooData;
-	private EditText editText;
-	private  Button button1;
+
 	/**
 	 * 作成時の処理。
 	 *
@@ -111,20 +95,16 @@ public class GameActivity extends Activity implements Runnable, OnClickListener 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		 setContentView(R.layout.main);
-
-		editText = (EditText)findViewById(R.id.edittext);
-		button1 = (Button)findViewById(R.id.saveButton);
-		zooData = new ZooData(this);
+		setContentView(R.layout.main);
 		// 変数初期化
 		loopFlag = true;
 
 		// 画面の矩形範囲を取得(本体全体)
 		WindowManager windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
 		Display display = windowManager.getDefaultDisplay();
-		screenRect = new Rect(0, 0, display.getWidth(), display.getHeight()
-				- SYSTEM_BAR_SIZE);
+		screenRect = new Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 		Rect gameScreen = new Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+
 
 		// 描画レイヤーを作成して、初期化する。 作成順に注意すること。
 		surfaceView = new GameSurfaceView(this, screenRect, gameScreen);
@@ -141,6 +121,8 @@ public class GameActivity extends Activity implements Runnable, OnClickListener 
 		setContentView(frameLayout);
 
 		gameMain = new GameMain(this);
+
+		sugorokuMain = new SugorokuMain(this);
 
 		// スレッドを作成して無限ループする。
 		thread = new Thread(this);
@@ -220,15 +202,16 @@ public class GameActivity extends Activity implements Runnable, OnClickListener 
 	public void run() {
 		// フレーム管理FPS
 		long currentTime = 0;
-		long prevTime = System.nanoTime();
+		long prevTime = System.nanoTime(); // ?
 		long prevTimeFPS = 0;
 		long frameRate = (1000000000L / FRAME_RATE);
 		int fpsCount = 0;
 		float elapsedTime = 0;
 
-		EditName();
+
 		// ゲームを初期化する。
 		gameMain.initialize();
+		sugorokuMain.initialize();
 
 		try {
 			while (loopFlag) {
@@ -239,6 +222,7 @@ public class GameActivity extends Activity implements Runnable, OnClickListener 
 				if (currentTime - prevTimeFPS > 1000000000L) {
 					prevTimeFPS = currentTime;
 					gameMain.setFps(fpsCount);
+					sugorokuMain.setFps(fpsCount);
 					fpsCount = 0;
 				}
 
@@ -251,15 +235,14 @@ public class GameActivity extends Activity implements Runnable, OnClickListener 
 
 						// 入力を更新する。
 						VirtualController.update();
-						if(zooData.getName().equals("")){
-							EditName();
-						}else{
-							// アプリケーションの更新および描画する
-							gameMain.update(elapsedTime);
-							if (surfaceView.Begin()) {
-								gameMain.draw(surfaceView);
-								surfaceView.End();
-							}
+
+						// アプリケーションの更新および描画する。
+						gameMain.update(elapsedTime);
+						sugorokuMain.update(elapsedTime);
+						if (surfaceView.Begin()) {
+							//gameMain.draw(surfaceView);
+							sugorokuMain.draw(surfaceView);
+							surfaceView.End();
 						}
 					}
 				}
@@ -304,13 +287,4 @@ public class GameActivity extends Activity implements Runnable, OnClickListener 
 		// 本来のフィニッシュを呼ぶ
 		super.finish();
 	}
-
-	public void EditName(){
-	    button1.setOnClickListener(this);
-	}
-	@Override
-	public void onClick(View v) {
-            zooData.setName(editText.getText().toString());
-     }
-
 }

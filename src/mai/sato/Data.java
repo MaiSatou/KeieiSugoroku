@@ -1,4 +1,4 @@
-package trident.Zoo;
+package mai.sato;
 
 public class Data {
 	  protected int id;	// アイテムの管理番号
