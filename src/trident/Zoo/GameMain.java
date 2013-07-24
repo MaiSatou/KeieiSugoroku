@@ -8,8 +8,6 @@ import java.util.Random;
 import mai.sato.DBAdapter;
 import mai.sato.ZooData;
 
-import takuya.kumagai.SugorokuMap;
-
 import kaoru.matsuno.GameMap;
 import kaoru.matsuno.MenuButton;
 

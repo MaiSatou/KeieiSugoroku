@@ -5,27 +5,14 @@ package trident.Zoo;
 
 import java.util.Random;
 
-import mai.sato.DBAdapter;
-import mai.sato.ZooData;
-
 import takuya.kumagai.SugorokuMap;
-
-import kaoru.matsuno.GameMap;
-import kaoru.matsuno.MenuButton;
-
-import Yamauchi.Dice;
+import Yamauchi.Event1;
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.Rect;
 import android.media.MediaPlayer;
-import android.preference.PreferenceManager;
 import android.view.Display;
-import android.view.MotionEvent;
-import android.view.View.OnTouchListener;
 import android.view.WindowManager;
 
 /**
@@ -119,28 +106,33 @@ public class SugorokuMain {
 	 * ダイス
 	 */
 	int dice;
-
-	//サイコロ
-		Dice saikoro = new Dice();
-		//サイコロの目
-		private Bitmap one;
-		private Bitmap two;
-		private Bitmap three;
-		private Bitmap four;
-		private Bitmap five;
-		private Bitmap six;
-
-
-
-		//イベント
-		private Bitmap eventmap;
-		private Bitmap eventtext;
-
-		//フラグ
-		//ヒットフラグ
-		private boolean hitflag;
-		//テキストフラグ
-		private boolean textflag;
+	
+	/**
+	 * イベント
+	 */
+	private Event1 event1;
+	
+	/**
+	 * イベント用画像１
+	 */
+	private Bitmap eventImg1;
+	
+	/**
+	 * イベント文字画像１
+	 */
+	private Bitmap textImg1;
+	
+	/**
+	 * イベント用画像２
+	 */
+	private Bitmap eventImg2;
+	
+	/**
+	 * イベント文字画像２
+	 */
+	private Bitmap textImg2;
+	
+	
 	/** ============================================ **/
 
 	/**
@@ -153,8 +145,6 @@ public class SugorokuMain {
 		// タッチ処理用コントローラを作成する。
 		virtualController = new VirtualController();
 
-		//初期化
-		init();
 		// タッチ座標用変数を作成
 		touch_push = new Vector2D();
 		touch_now = new Vector2D();
@@ -187,7 +177,18 @@ public class SugorokuMain {
 
 		// ベクトルの作成
 		vec = new Vector2D();
-
+		
+		//イベント画像を読み込む
+		eventImg1 = BitmapFactory.decodeResource(context.getResources(),
+				R.drawable.dog,options);
+		
+		//イベント文字画像を読み込む
+		textImg1 = BitmapFactory.decodeResource(context.getResources(),
+				R.drawable.event,options);
+		
+		//イベント生成
+		event1 = new Event1(eventImg1,textImg1);
+		
 	}
 
 	/**
@@ -323,35 +324,29 @@ public class SugorokuMain {
 			sv.DrawImage(six, 520,220);
 		}*/
 
-		//イベントマップ
-				sv.DrawImage(eventmap,150,200);
-				sv.DrawImage(eventtext, 150, 130);
-				sv.DrawText("さいころゲーム", 450, 130, Color.BLACK);
-				sv.DrawText("サイコロを振って出た目の数が", 450, 150, Color.BLACK);
-				sv.DrawText("２、４、６の場合犬捕獲！", 450, 170, Color.BLACK);
+		
 
-				//イベント結果
-				if(VirtualController.isTouch(0) == false)
+		/*//イベント結果
+		if(VirtualController.isTouch(0) == false)
+		{
+			if(saikoro.getNumber() != 0)
+			{
+				if(saikoro.getNumber()%2 == 0)
 				{
-					if(saikoro.getNumber() != 0)
-					{
-						if(saikoro.getNumber()%2 == 0)
-						{
-							sv.DrawText("成功", 530, 340, Color.BLACK);
-						}
-						else
-						{
-							sv.DrawText("失敗", 530, 340, Color.BLACK);
-						}
-						textflag = true;
-					}
+					sv.DrawText("成功", 530, 340, Color.BLACK);
 				}
+				else
+				{
+					sv.DrawText("失敗", 530, 340, Color.BLACK);
+				}
+				textflag = true;
+			}
+		}*/
 
 		// マップの表示
-		sugorokumap.draw(sv);
+	//	sugorokumap.draw(sv);
 
 		sv.DrawText("dice:" + dice, 10, 40, Color.BLACK);
-
 		// テキストを表示する。
 		sv.DrawText("FPS:" + fps, 10, 20, Color.BLACK);
 		sv.DrawText("TIME:" + totalElapsedTime + "現在意味なし", 10, 40, Color.BLACK);
@@ -360,7 +355,25 @@ public class SugorokuMain {
 		sv.DrawText("x2:" + touch_release.x + " y2:" + touch_release.y, 300,
 				20, Color.WHITE);
 		sv.DrawText("vec_X:" + vec.x + " vec_y:" + vec.y, 300, 40, Color.WHITE);
-
+		
+		//イベント
+		if(dice%2 == 0)
+		{
+			/*
+			//イベント１
+			// イベントの表示
+			event.Draw(sv);
+			if(dice%2 == 0)
+			{
+				sv.DrawText("成功", 500, 300, Color.BLACK);
+			}*/
+		}
+		else
+		{
+			//イベント２
+			// イベントの表示
+			event1.Draw(sv);
+		}
 
 	}
 
@@ -373,35 +386,5 @@ public class SugorokuMain {
 	public void setFps(int fps) {
 		this.fps = fps;
 	}
-
-	//初期化
-	public void init()
-	{
-		// BGMを読み込む。
-		bgm = MediaPlayer.create(context, R.raw.bgm);
-		// SEの読み込み
-		se = MediaPlayer.create(context, R.raw.se);
-		// リソースから背景画像を読み込む。
-		bg = BitmapFactory
-				.decodeResource(context.getResources(), R.drawable.bg);
-		one = BitmapFactory.decodeResource(context.getResources(),
-				 R.drawable.one);
-		two = BitmapFactory.decodeResource(context.getResources(),
-				 R.drawable.two);
-		three = BitmapFactory.decodeResource(context.getResources(),
-				 R.drawable.three);
-	 	four = BitmapFactory.decodeResource(context.getResources(),
-	 			 R.drawable.four);
-		five = BitmapFactory.decodeResource(context.getResources(),
-				 R.drawable.five);
-		six = BitmapFactory.decodeResource(context.getResources(),
-				 R.drawable.six);
-		saikoro.setNumber(0);
-		eventtext = BitmapFactory.decodeResource(context.getResources(),
-				R.drawable.event);
-		eventmap = BitmapFactory.decodeResource(context.getResources(),
-				R.drawable.dog);
-		hitflag = false;
-		textflag = false;
-	}
+	
 }
