@@ -1,7 +1,10 @@
 package trident.Zoo;
 
+import mai.sato.Entry;
+import mai.sato.Splash;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.os.Bundle;
@@ -76,10 +79,6 @@ public class GameActivity extends Activity implements Runnable {
 	 * ゲーム本体。
 	 */
 	private GameMain gameMain;
-	/**
-	 * ゲーム本体。
-	 */
-	private SugorokuMain sugorokuMain;
 
 	/**
 	 * コンテキスト。
@@ -121,8 +120,6 @@ public class GameActivity extends Activity implements Runnable {
 		setContentView(frameLayout);
 
 		gameMain = new GameMain(this);
-
-		sugorokuMain = new SugorokuMain(this);
 
 		// スレッドを作成して無限ループする。
 		thread = new Thread(this);
@@ -211,7 +208,6 @@ public class GameActivity extends Activity implements Runnable {
 
 		// ゲームを初期化する。
 		gameMain.initialize();
-		sugorokuMain.initialize();
 
 		try {
 			while (loopFlag) {
@@ -222,7 +218,6 @@ public class GameActivity extends Activity implements Runnable {
 				if (currentTime - prevTimeFPS > 1000000000L) {
 					prevTimeFPS = currentTime;
 					gameMain.setFps(fpsCount);
-					sugorokuMain.setFps(fpsCount);
 					fpsCount = 0;
 				}
 
@@ -238,10 +233,15 @@ public class GameActivity extends Activity implements Runnable {
 
 						// アプリケーションの更新および描画する。
 						gameMain.update(elapsedTime);
-						sugorokuMain.update(elapsedTime);
+						if(gameMain.isEntry()){
+							Intent intent = new Intent(getApplication(), Entry.class);
+							startActivity(intent);
+							// SplashActivityを終了させます。
+							GameActivity.this.finish();
+						}
+
 						if (surfaceView.Begin()) {
-							//gameMain.draw(surfaceView);
-							sugorokuMain.draw(surfaceView);
+							gameMain.draw(surfaceView);
 							surfaceView.End();
 						}
 					}

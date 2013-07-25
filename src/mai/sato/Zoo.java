@@ -1,63 +1,30 @@
-/*
- * ゲーム本体。
- */
-package trident.Zoo;
+package mai.sato;
 
 import java.util.Random;
 
+import trident.Zoo.GameSurfaceView;
+import trident.Zoo.R;
+import trident.Zoo.Vector2D;
+import trident.Zoo.VirtualController;
+import trident.Zoo.R.drawable;
+
 import kaoru.matsuno.GameMap;
 import kaoru.matsuno.MenuButton;
-
-import mai.sato.DBAdapter;
-import mai.sato.ZooData;
-
-import takuya.kumagai.SugorokuMap;
-
-
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.Rect;
 import android.media.MediaPlayer;
-import android.preference.PreferenceManager;
 import android.view.Display;
-import android.view.MotionEvent;
-import android.view.View.OnTouchListener;
 import android.view.WindowManager;
 
-/**
- * ゲーム本体のアクティビティ。
- *
- * @author minnna
- */
-public class GameMain {
+public class Zoo {
 
-	/** ================== 変数宣言 ================== **/
-
-	/**
-	 * FPS。
-	 */
-	private int fps;
-
-	/**
-	 * 経過時間
-	 */
-	private long startTime = 0;
-
-	/**
-	 * 合計経過時間
-	 */
 	private float totalElapsedTime;
-
-
 	/**
 	 * 仮想コントローラ。
 	 */
 	private VirtualController virtualController;
-
 	/**
 	 * マウスを押したX,Y座標。
 	 */
@@ -71,25 +38,6 @@ public class GameMain {
 	 * マウスを離したX,Y座標
 	 */
 	private Vector2D touch_release;
-
-	/**
-	 * 乱数オブジェクト。
-	 */
-	private Random r = new Random();
-
-	/**
-	 * BGM。
-	 */
-	private MediaPlayer bgm;
-
-	/**
-	 * 効果音。
-	 */
-	private MediaPlayer se;
-
-	/**
-	 * コンテキスト。
-	 */
 	private Context context;
 
 	/**
@@ -107,7 +55,6 @@ public class GameMain {
 	private String selectButton = "noSelect";
 	private WindowManager wm;
 	private Display disp;
-
 	/**
 	 * ビットマップ用画像
 	 */
@@ -121,31 +68,14 @@ public class GameMain {
 	 * ベクトル
 	 */
 	private Vector2D vec;
-
-	/**
-	 * すごろく
-	 */
-	private SugorokuMain sugoroku;
-
-	private boolean entry;
-	/** ============================================ **/
-
-	/**
-	 * コンストラクタ
-	 */
-	public GameMain(Context context) {
-		entry = false;
-		selectButtonNum = 5;
-		this.context = context;
-		sugoroku = new SugorokuMain(this.context);
-
-		// タッチ処理用コントローラを作成する。
+	public Zoo(Context context){
 		virtualController = new VirtualController();
-
 		// タッチ座標用変数を作成
 		touch_push = new Vector2D();
 		touch_now = new Vector2D();
 		touch_release = new Vector2D();
+
+		this.context = context;
 		wm = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
 		disp = wm.getDefaultDisplay();
 		// 端末に保存されているユーザー名を取得する。
@@ -159,14 +89,6 @@ public class GameMain {
 		dbAdapter = new DBAdapter(this.context);
 		dbAdapter.saveData("abcdefg",0,0,0);
 		dbAdapter.loadData();
-		// タッチ処理用コントローラを作成する。
-		virtualController = new VirtualController();
-
-		// BGMを読み込む。
-		bgm = MediaPlayer.create(context, R.raw.bgm);
-
-		// SEの読み込み
-		se = MediaPlayer.create(context, R.raw.se);
 
 		// リソースから背景画像を読み込む。
 		bg = BitmapFactory
@@ -180,40 +102,14 @@ public class GameMain {
 
 		map = new GameMap(mapImg);
 
-		// ランダムの作成
-		r = new Random();
-
 		// ベクトルの作成
 		vec = new Vector2D();
-
 	}
 
-	/**
-	 * 0～maxの中からランダムな整数を得る。
-	 *
-	 * @param max
-	 * @return 乱数値
-	 */
-	public int getRandom(int max) {
-		return r.nextInt(max);
-	}
-
-	/**
-	 * 全サウンドを終了する（アプリ終了時にも呼ばれる）
-	 */
-	public void stopSound() {
-		bgm.stop();
-		se.stop();
-	}
-
-	/**
-	 * ゲームを初期化する。
-	 */
-	void initialize() {
+	public void initialize() {
 		// BGMを再生する。
 		// bgm.start();
 
-		sugoroku.initialize();
 		context = null;
 
 		touch_push.Init();
@@ -230,92 +126,10 @@ public class GameMain {
 	 * フレーム毎に座標などを更新する。
 	 */
 	public void update(float elapsedTime) {
-		updateGame(elapsedTime);
+		touchupdate();
 	}
 
-	/**
-	 * フレーム毎に描画する。
-	 *
-	 * @param sv
-	 *            サーフェイスビュー
-	 */
-	public void draw(GameSurfaceView sv) {
-		drawGame(sv);
-	}
-
-	/**
-	 * ゲームの状態を更新する。
-	 */
-	void updateGame(float elapsedTime) {
-		switch(selectButtonNum){
-		case 0:
-			break;
-		case 1:
-			sugoroku.update(elapsedTime);
-			break;
-
-		case 2:
-			break;
-		case 3:
-			break;
-		case 4:
-			break;
-		default:
-			ZooUpdate(elapsedTime);
-			break;
-		}
-
-	}
-
-	/**
-	 * ゲームシーンを描画する。
-	 *
-	 * @param sv
-	 *            サーフェイスビュー
-	 */
-	void drawGame(GameSurfaceView sv) {
-		switch(selectButtonNum){
-		case 0:
-
-			break;
-
-		case 1:
-			sugoroku.draw(sv);
-			break;
-
-		case 2:
-			break;
-
-		case 3:
-			break;
-
-		case 4:
-			break;
-
-			default:
-				ZooDraw(sv);
-				break;
-		}
-
-	}
-
-	/**
-	 * FPSを設定する。
-	 *
-	 * @param fps
-	 *            FPS
-	 */
-	public void setFps(int fps) {
-		this.fps = fps;
-	}
-
-	public void ZooUpdate(float elapsedTime){
-
-		if (elapsedTime != 0.0f) {
-			// デバック用　現在意味をなしていない GameActivityに問題あり
-			// 合計経過時間
-			totalElapsedTime += elapsedTime;
-		}
+	public void touchupdate(){
 		// 画面にタッチしてる？
 		if (VirtualController.isTouch(0)) {
 			// FPSの表示座標をタッチ位置に更新
@@ -323,12 +137,10 @@ public class GameMain {
 				touch_push.x = VirtualController.getTouchX(0);
 				touch_push.y = VirtualController.getTouchY(0);
 
+
 				// タッチ座標を入れる
 				for(int i = 0;i < menu.length;i++){
 					if(menu[i].TouchButton((int)touch_push.x, (int)touch_push.y)){
-						if(menu[i].getName().equals("SET")){
-							entry = true;
-						}
 						selectButtonNum = i;
 					}
 				}
@@ -341,7 +153,6 @@ public class GameMain {
 			vec.x = touch_now.x - touch_push.x;
 			vec.y = touch_now.y - touch_push.y;
 			// 効果音を再生する。
-			se.start();
 		} else {
 			// 指を離した時の座標を入れる
 			touch_release.x = VirtualController.getTouchX(0);
@@ -350,15 +161,14 @@ public class GameMain {
 			vec.x = touch_release.x - touch_push.x;
 			vec.y = touch_release.y - touch_push.y;
 		}
-	}
 
-	public void ZooDraw(GameSurfaceView sv){
+	}
+	public void draw(GameSurfaceView sv){
 		// 背景を表示する。
 		sv.DrawImage(bg, 0, 0);
 		map.draw(sv);
 
 		// テキストを表示する。
-		sv.DrawText("FPS:" + fps, 10, 20, Color.BLACK);
 		sv.DrawText("TIME:" + totalElapsedTime + "現在意味なし", 10, 40, Color.BLACK);
 		sv.DrawText("x:" + touch_push.x + " y:" + touch_push.y, 100, 20,
 				Color.WHITE);
@@ -387,9 +197,4 @@ public class GameMain {
 		sv.DrawRect((int)touch_push.x, (int)touch_push.y, (int)touch_push.x + 10,(int)touch_push.y + 10,Color.CYAN);
 
 	}
-
-	public boolean isEntry(){
-		return entry;
-	}
-
 }

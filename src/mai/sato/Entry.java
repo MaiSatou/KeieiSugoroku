@@ -17,6 +17,7 @@ public class Entry extends Activity implements OnClickListener {
 
 	  EditText edittext;
 	  Button  saveButton;
+	  Button cancelButton;
 	  TextView textView;
 	  ZooData zooData;
 
@@ -28,13 +29,18 @@ public class Entry extends Activity implements OnClickListener {
 	        findViews();
 	        textView.setText("名前を入力してください(全角8文字以内)");
 	        saveButton.setOnClickListener(this);
+	        if(!(zooData.getName().equals(""))){
+	        	cancelButton.setOnClickListener(this);
+	        }
 	    }
 
 	    protected void findViews(){
 	      textView = (TextView)findViewById(R.id.textview);
 	      edittext = (EditText)findViewById(R.id.edittext);
 	      saveButton = (Button)findViewById(R.id.saveButton);
-
+	      if(!(zooData.getName().equals(""))){
+	    	  cancelButton = (Button)findViewById(R.id.cancelButton);
+	      }
 	    }
 
 
@@ -43,12 +49,15 @@ public class Entry extends Activity implements OnClickListener {
 	  public void onClick(View v) {
 	    switch(v.getId()){
 	    case R.id.saveButton:
-	      zooData.setName(edittext.getText().toString());
-	      	Intent intent = new Intent(getApplication(),GameActivity.class);
-			startActivity(intent);
-			// SplashActivityを終了させます。
-			Entry.this.finish();
+	    	if(!edittext.getText().toString().equals("")){
+		      zooData.setName(edittext.getText().toString());
+		      	Intent intent = new Intent(getApplication(),GameActivity.class);
+				startActivity(intent);
+				// SplashActivityを終了させます。
+				Entry.this.finish();
+	    	}
 	      break;
+
 	    }
 	  }
 	}

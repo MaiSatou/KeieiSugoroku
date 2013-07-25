@@ -25,15 +25,18 @@ public final class R {
         public static final int number=0x7f02000b;
         public static final int one=0x7f02000c;
         public static final int quartersample=0x7f02000d;
-        public static final int six=0x7f02000e;
-        public static final int three=0x7f02000f;
-        public static final int two=0x7f020010;
+        public static final int saru=0x7f02000e;
+        public static final int six=0x7f02000f;
+        public static final int start=0x7f020010;
+        public static final int three=0x7f020011;
+        public static final int two=0x7f020012;
     }
     public static final class id {
+        public static final int cancelButton=0x7f060003;
         public static final int edittext=0x7f060001;
         public static final int saveButton=0x7f060002;
         public static final int textview=0x7f060000;
-        public static final int title=0x7f060003;
+        public static final int title=0x7f060004;
     }
     public static final class layout {
         public static final int main=0x7f030000;
