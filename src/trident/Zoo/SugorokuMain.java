@@ -7,6 +7,7 @@ import java.util.Random;
 
 import takuya.kumagai.SugorokuMap;
 import Yamauchi.Event1;
+import Yamauchi.Event2;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -108,7 +109,7 @@ public class SugorokuMain {
 	int dice;
 	
 	/**
-	 * イベント
+	 * イベント１
 	 */
 	private Event1 event1;
 	
@@ -123,14 +124,19 @@ public class SugorokuMain {
 	private Bitmap textImg1;
 	
 	/**
+	 * イベント２
+	 */
+	private Event2 event2;
+	
+	/**
 	 * イベント用画像２
 	 */
 	private Bitmap eventImg2;
 	
 	/**
-	 * イベント文字画像２
+	 * スタート画像
 	 */
-	private Bitmap textImg2;
+	private Bitmap startImg;
 	
 	
 	/** ============================================ **/
@@ -178,16 +184,27 @@ public class SugorokuMain {
 		// ベクトルの作成
 		vec = new Vector2D();
 		
-		//イベント画像を読み込む
+		//イベント１画像を読み込む
 		eventImg1 = BitmapFactory.decodeResource(context.getResources(),
 				R.drawable.dog,options);
 		
-		//イベント文字画像を読み込む
+		//イベント１文字画像を読み込む
 		textImg1 = BitmapFactory.decodeResource(context.getResources(),
 				R.drawable.event,options);
 		
-		//イベント生成
-		event1 = new Event1(eventImg1,textImg1);
+		//スタート画像を読み込む
+		startImg = BitmapFactory.decodeResource(context.getResources(),
+				R.drawable.start,options);
+		
+		//イベント１生成
+		event1 = new Event1(eventImg1,textImg1,startImg);
+		
+		//イベント２画像を読み込む
+		eventImg2 = BitmapFactory.decodeResource(context.getResources(),
+				R.drawable.saru,options);
+		
+		//イベント２生成
+		event2 = new Event2(eventImg2,textImg1,startImg);
 		
 	}
 
@@ -359,20 +376,13 @@ public class SugorokuMain {
 		//イベント
 		if(dice%2 == 0)
 		{
-			/*
-			//イベント１
-			// イベントの表示
-			event.Draw(sv);
-			if(dice%2 == 0)
-			{
-				sv.DrawText("成功", 500, 300, Color.BLACK);
-			}*/
+			//イベント１の表示
+			event1.Draw(sv);
 		}
 		else
 		{
-			//イベント２
-			// イベントの表示
-			event1.Draw(sv);
+			//イベント２の表示
+			event2.Draw(sv);
 		}
 
 	}
