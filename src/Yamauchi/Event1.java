@@ -27,7 +27,7 @@ public class Event1 extends Event
 	 */
 	public void Initialize()
 	{
-
+		startFlag = false;
 	}
 	
 	/**
@@ -48,7 +48,6 @@ public class Event1 extends Event
 		sv.DrawText("さいころゲーム", 450, 130, Color.BLACK);
 		sv.DrawText("サイコロを振って出た目の数が", 450, 150, Color.BLACK);
 		sv.DrawText("２、４、６の場合犬捕獲！", 450, 170, Color.BLACK);
-		sv.DrawImage(startImg,450,250);
  	}
 	
 }

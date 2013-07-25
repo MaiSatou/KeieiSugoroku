@@ -28,6 +28,16 @@ abstract public class Event
 	protected Bitmap startImg;
 	
 	/**
+	 * スタートフラグ
+	 */
+	protected boolean startFlag;
+	
+	/**
+	 * イベントフラグ
+	 */
+	protected boolean eventFlag;
+	
+	/**
 	 * コンストラクタ
 	 * @param img
 	 */
@@ -49,8 +59,49 @@ abstract public class Event
 	abstract void Update();
 	
 	/**
-	 * イベント１
+	 * 描画
 	 */
 	abstract void Draw(GameSurfaceView sv);
+	
+	/**
+	 * スタートフラグを返す
+	 */
+	public boolean Return_StartFlag()
+	{
+		return startFlag;
+	}
+	
+	/**
+	 * スタートフラグを点灯させる
+	 */
+	public void On_StartFlag()
+	{
+		startFlag = true;
+	}
+
+	/**
+	 * イベントフラグを返す
+	 */
+	public boolean Return_EventFlag()
+	{
+		return eventFlag;
+	}
+	
+	/**
+	 * イベントフラグを点灯させる
+	 */
+	public void On_EventFlag()
+	{
+		eventFlag = true;
+	}
+	
+	/**
+	 * スタート画像を表示
+	 */
+	public void DrawStart(GameSurfaceView sv)
+	{
+		sv.DrawImage(startImg,450,250);
+	}
+
 }
 	

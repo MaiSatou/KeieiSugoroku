@@ -138,6 +138,23 @@ public class SugorokuMain {
 	 */
 	private Bitmap startImg;
 	
+	//サイコロ
+	private Bitmap one;
+	private Bitmap two;
+	private Bitmap three;
+	private Bitmap four;
+	private Bitmap five;
+	private Bitmap six;
+	
+	//カウント
+	private int count;
+	
+	//サイコロフラグ
+	private boolean saikoroflag;
+	
+	//結果フラグ
+	private boolean resultflag;
+	
 	
 	/** ============================================ **/
 
@@ -206,6 +223,26 @@ public class SugorokuMain {
 		//イベント２生成
 		event2 = new Event2(eventImg2,textImg1,startImg);
 		
+		//サイコロ
+		one = BitmapFactory.decodeResource(context.getResources(),
+				 R.drawable.one,options);				
+		two = BitmapFactory.decodeResource(context.getResources(),
+				 R.drawable.two,options);
+		three = BitmapFactory.decodeResource(context.getResources(),
+				 R.drawable.three,options);
+	 	four = BitmapFactory.decodeResource(context.getResources(),
+	 			 R.drawable.four,options);
+		five = BitmapFactory.decodeResource(context.getResources(),
+				 R.drawable.five,options);
+		six = BitmapFactory.decodeResource(context.getResources(),
+				 R.drawable.six,options);
+		
+		count = 0;
+		
+		saikoroflag = false;
+		
+		resultflag = false;
+		
 	}
 
 	/**
@@ -267,6 +304,29 @@ public class SugorokuMain {
 	 */
 	void updateGame(float elapsedTime) {
 
+		event1.On_EventFlag();
+		if(event1.Return_StartFlag() == false)
+		{
+			dice = 0;
+		}
+		// 画面にタッチした瞬間にカウントを上げる
+		if (VirtualController.isTouchTrigger(0))
+		{
+			count ++;
+		}
+		else
+		{
+		}
+		//スタートしてタッチしていないならば結果フラグを点灯
+		if(event1.Return_StartFlag() == true)
+		{
+			if(VirtualController.isTouch(0) == false)
+			{
+				resultflag = true;
+			}
+		}
+		
+		
 		if (elapsedTime != 0.0f) {
 			// デバック用　現在意味をなしていない GameActivityに問題あり
 			// 合計経過時間
@@ -275,25 +335,41 @@ public class SugorokuMain {
 		// 画面にタッチしてる？
 		if (VirtualController.isTouch(0)) {
 			// FPSの表示座標をタッチ位置に更新
-			if (VirtualController.isTouchTrigger(0)) {
+	//		if (VirtualController.isTouchTrigger(0)) {
 				touch_push.x = VirtualController.getTouchX(0);
 				touch_push.y = VirtualController.getTouchY(0);
-				// 1~6のダイス
-				dice = getRandom(5) + 1;
-
+				
+				if(touch_push.x > 300)
+				{
+					event1.On_StartFlag();
+				}
+				
+				if(event1.Return_StartFlag() == true && event1.Return_StartFlag() == true)
+				{
+					if(touch_push.x > 300)
+					{
+						//カウントが１の場合サイコロを振る
+						if(count == 1)
+						{
+							// 1~6のダイス
+							dice = getRandom(5) + 1;
+						}
+					}
+				}
+				
+				
 				// マップの更新
 				sugorokumap.Update(dice);
-
-			}
-			// 指を離した時の座標を入れる
-			// タッチされている座標を入れる
-			touch_now.x = VirtualController.getTouchX(0);
-			touch_now.y = VirtualController.getTouchY(0);
-
-			vec.x = touch_now.x - touch_push.x;
-			vec.y = touch_now.y - touch_push.y;
-			// 効果音を再生する。
-			se.start();
+		
+				// 指を離した時の座標を入れる
+				// タッチされている座標を入れる
+				touch_now.x = VirtualController.getTouchX(0);
+				touch_now.y = VirtualController.getTouchY(0);
+	
+				vec.x = touch_now.x - touch_push.x;
+				vec.y = touch_now.y - touch_push.y;
+				// 効果音を再生する。
+				se.start();
 		} else {
 			// 指を離した時の座標を入れる
 			touch_release.x = VirtualController.getTouchX(0);
@@ -302,7 +378,6 @@ public class SugorokuMain {
 			vec.x = touch_release.x - touch_push.x;
 			vec.y = touch_release.y - touch_push.y;
 		}
-
 	}
 
 	/**
@@ -373,20 +448,99 @@ public class SugorokuMain {
 				20, Color.WHITE);
 		sv.DrawText("vec_X:" + vec.x + " vec_y:" + vec.y, 300, 40, Color.WHITE);
 		
-		//イベント
-		if(dice%2 == 0)
+		//スタートしていなければ
+		if(event1.Return_StartFlag() == false)
+		{
+			//イベント１とスタートの表示
+			event1.Draw(sv);
+			event1.DrawStart(sv);
+		}
+		//スタートしたら
+		else
 		{
 			//イベント１の表示
 			event1.Draw(sv);
 		}
+		
+		// FPSの表示座標をタッチ位置に更新
+		if (VirtualController.isTouch(0)) {
+			//サイコロ
+			if(dice == 1)
+			{
+				sv.DrawImage(one, 520,220);
+			}
+			else if(dice == 2)
+			{
+				sv.DrawImage(two, 520,220);
+			}
+			else if(dice == 3)
+			{
+				sv.DrawImage(three, 520,220);
+			}
+			else if(dice == 4)
+			{
+				sv.DrawImage(four, 520,220);
+			}
+			else if(dice == 5)
+			{
+				sv.DrawImage(five, 520,220);
+			}
+			else if(dice == 6)
+			{
+				sv.DrawImage(six, 520,220);
+			}
+			else
+			{
+			}
+		}
 		else
 		{
-			//イベント２の表示
-			event2.Draw(sv);
+			//サイコロ
+			if(dice == 1)
+			{
+				sv.DrawImage(one, 520,220);
+			}
+			else if(dice == 2)
+			{
+				sv.DrawImage(two, 520,220);
+			}
+			else if(dice == 3)
+			{
+				sv.DrawImage(three, 520,220);
+			}
+			else if(dice == 4)
+			{
+				sv.DrawImage(four, 520,220);
+			}
+			else if(dice == 5)
+			{
+				sv.DrawImage(five, 520,220);
+			}
+			else if(dice == 6)
+			{
+				sv.DrawImage(six, 520,220);
+			}
+			else
+			{
+			}
 		}
-
+		
+		if(resultflag == true)
+		{
+			if(dice %2 == 0)
+			{
+				sv.DrawText("成功", 530, 340, Color.WHITE);
+			}
+			else
+			{
+				sv.DrawText("失敗", 530, 340, Color.WHITE);
+			}
+		}
+		
+		sv.DrawText(""+saikoroflag, 530, 400, Color.WHITE);
+		sv.DrawText(""+count, 580, 400, Color.WHITE);
 	}
-
+	
 	/**
 	 * FPSを設定する。
 	 *
