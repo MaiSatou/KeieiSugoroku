@@ -28,6 +28,7 @@ public class Event1 extends Event
 	public void Initialize()
 	{
 		startFlag = false;
+		eventFlag = false;
 	}
 	
 	/**

@@ -78,6 +78,14 @@ abstract public class Event
 	{
 		startFlag = true;
 	}
+	
+	/**
+	 * スタートフラグを消灯させる
+	 */
+	public void Off_StartFlag()
+	{
+		startFlag = false;
+	}
 
 	/**
 	 * イベントフラグを返す
@@ -96,11 +104,19 @@ abstract public class Event
 	}
 	
 	/**
+	 * イベントフラグを消灯させる
+	 */
+	public void Off_EventFlag()
+	{
+		eventFlag = false;
+	}
+	
+	/**
 	 * スタート画像を表示
 	 */
 	public void DrawStart(GameSurfaceView sv)
 	{
-		sv.DrawImage(startImg,450,250);
+		sv.DrawImage(startImg,450,200);
 	}
 
 }
